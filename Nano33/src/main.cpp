@@ -10,6 +10,8 @@ float pitch, roll, yaw; // orientation
 float deltat; // time elapsed between measurements (for sensor fusion)
 
 void setup() {
+
+    digitalWrite(LED_PWR, LOW); // turn off LED to reduce consumption
     
     // start serial and wait for it to initialize
     Serial.begin(9600);
