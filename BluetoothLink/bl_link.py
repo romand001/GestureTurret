@@ -34,7 +34,7 @@ print("connecting to glove...")
 try:
     adapter.start()
     glove_ble = adapter.connect('01:23:45:67:89:ab')
-    device.subscribe("a1e8f5b1-696b-4e4c-87c6-69dfe0b0093b",
+    glove_ble.subscribe("a1e8f5b1-696b-4e4c-87c6-69dfe0b0093b",
                     callback=handle_data)
 except:
     print("could not connect")
