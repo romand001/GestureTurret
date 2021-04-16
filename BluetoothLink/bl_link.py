@@ -3,7 +3,9 @@ import pygatt
 from binascii import hexlify
 from time import sleep
 
-#adapter = pygatt.GATTToolBackend()
+import traceback
+
+ser = None # global serial port for turret
 
 adapter = pygatt.BGAPIBackend()
 
@@ -13,6 +15,25 @@ def handle_data(handle, value):
     value -- bytearray, the data returned in the notification
     """
     print("Received data: %s" % hexlify(value))
+
+def yawCallback(handle, value):
+    print(f"received yaw of {value}")
+
+    angle = value / 2
+
+    ser.write("2-" + string( int(angle) ))
+
+def pitchCallback(handle, value):
+    print(f"received pitch of {value}")
+
+    angle = value / 2
+
+    ser.write("1-" + string( int(angle) ))
+
+def rollCallback(handle, value):
+    print(f"received roll of {value}, doing nothing")
+
+
 
 def connect_serial(port, rate=9600):
     ser = serial.Serial(port = f"COM{port}", 
@@ -27,19 +48,26 @@ def connect_serial(port, rate=9600):
     return ser
 
 print("connecting to turret...")
-turret_serial = connect_serial(port=11, rate=9600)
+turret_serial = connect_serial(port=12, rate=9600)
 
 print("connecting to glove...")
 
-try:
-    adapter.start()
-    glove_ble = adapter.connect('01:23:45:67:89:ab')
-    glove_ble.subscribe("a1e8f5b1-696b-4e4c-87c6-69dfe0b0093b",
-                    callback=handle_data)
-except:
-    print("could not connect")
-finally:
-    adapter.stop()
+while True:
+    try:
+        adapter.start()
+        glove_ble = adapter.connect('83:18:48:52:8c:d8')
+        glove_ble.subscribe("2713", callback=yawCallback)
+        glove_ble.subscribe("2714", callback=pitchCallback)
+        glove_ble.subscribe("2715", callback=rollCallback)
+    except:
+        print("could not connect")
+        #traceback.print_exc()
+    finally:
+        adapter.stop()
+        pass
+    
+    sleep(0.5)
+
 
 
 
