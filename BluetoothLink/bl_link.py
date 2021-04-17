@@ -17,6 +17,8 @@ yaw_UUID = "00002713-0000-1000-8000-00805f9b34fb"
 pitch_UUID = "00002714-0000-1000-8000-00805f9b34fb"
 roll_UUID = "00002715-0000-1000-8000-00805f9b34fb"
 
+laser = 1
+
 def connect_serial(port, rate=9600):
     ser = serial.Serial(port = f"COM{port}", 
                         baudrate=rate,
@@ -44,7 +46,7 @@ async def run(address, ser):
                 angle2 = 90 - int(yaw/2)
                 pitch = struct.unpack('f', pitch_b)[0]
                 angle1 = 90 - int(pitch/4)
-                cmd = str.encode("{:0>3d},{:0>3d}\n".format(angle1, angle2))
+                cmd = str.encode("{:0>3d},{:0>3d},{}\n".format(angle1, angle2, laser))
                 ser.write(cmd)
             except:
                 traceback.print_exc()
