@@ -38,24 +38,18 @@ async def run(address, ser):
         while True:
 
             yaw_b = await client.read_gatt_char(yaw_UUID)
-            try:
-                yaw = struct.unpack('f', yaw_b)[0]
-                cmd = str.encode( "2-" + str(90 - int(yaw/2)) + "\n" )
-                print(cmd)
-                ser.write(cmd)
-            except:
-                traceback.print_exc()
-
             pitch_b = await client.read_gatt_char(pitch_UUID)
             try:
+                yaw = struct.unpack('f', yaw_b)[0]
+                angle2 = 90 - int(yaw/2)
                 pitch = struct.unpack('f', pitch_b)[0]
-                cmd = str.encode( "1-" + str(90 - int(pitch/4)) + "\n" )
-                print(cmd)
+                angle1 = 90 - int(pitch/4)
+                cmd = str.encode("{:0>3d},{:0>3d}\n".format(angle1, angle2))
                 ser.write(cmd)
             except:
                 traceback.print_exc()
 
-            roll_b = await client.read_gatt_char(roll_UUID)
+            # roll_b = await client.read_gatt_char(roll_UUID)
             # try:
             #     roll = struct.unpack('f', roll_b)[0]
             #     # print(f"roll: {roll}")

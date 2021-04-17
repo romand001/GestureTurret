@@ -24,29 +24,45 @@ void setup() {
 
 void loop() {
 
-    if (Serial.available() >= 5) {
+    if (Serial.available() >= 8) {
 
-        int device = Serial.readStringUntil('-').toInt();
-        int value = Serial.readStringUntil('\n').toInt();
-        Serial.print(device); Serial.print("-"); Serial.println(value);
+        // int device = Serial.readStringUntil('-').toInt();
+        // int value = Serial.readStringUntil('\n').toInt();
+        // Serial.print(device); Serial.print("-"); Serial.println(value);
 
-        switch (device) {
-            case 1:
-                value = max(value, S1_MIN);
-                value = min(value, S1_MAX);
-                servo1.write(value);
-                break;
-            case 2:
-                value = max(value, S2_MIN);
-                value = min(value, S2_MAX);
-                servo2.write(value);
-                break;
-            case 3:
-                if (value == 0 || value == 1) {
-                    digitalWrite(LASER_PIN, value);
-                }
-                break;
-        }
+        // switch (device) {
+        //     case 1:
+        //         value = max(value, S1_MIN);
+        //         value = min(value, S1_MAX);
+        //         servo1.write(value);
+        //         break;
+        //     case 2:
+        //         value = max(value, S2_MIN);
+        //         value = min(value, S2_MAX);
+        //         servo2.write(value);
+        //         break;
+        //     case 3:
+        //         if (value == 0 || value == 1) {
+        //             digitalWrite(LASER_PIN, value);
+        //         }
+        //         break;
+        // }
+
+        int angle1 = Serial.readStringUntil(',').toInt();
+        int angle2 = Serial.readStringUntil('\n').toInt();
+
+        angle1 = max(angle1, S1_MIN);
+        angle1 = min(angle1, S1_MAX);
+
+        angle2 = max(angle2, S1_MIN);
+        angle2 = min(angle2, S1_MAX);
+
+        servo1.write(angle1);
+        servo2.write(angle2);
+
+
+
+
     }
 
     delay(10);

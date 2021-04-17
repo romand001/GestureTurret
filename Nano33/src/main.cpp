@@ -10,9 +10,9 @@ SF fusion; // object for sensor fusion
 BLEService yprService("1234"); // BLE service for yaw, pitch, roll
 
 // characteristics for yaw, pitch, and roll floats
-BLEFloatCharacteristic yawChar("2713", BLERead | BLENotify); // yaw characteristic
-BLEFloatCharacteristic pitchChar("2714", BLERead | BLENotify); // pitch characteristic
-BLEFloatCharacteristic rollChar("2715", BLERead | BLENotify); // roll characteristic
+BLEFloatCharacteristic yawChar("2713", BLERead); // yaw characteristic
+BLEFloatCharacteristic pitchChar("2714", BLERead); // pitch characteristic
+BLEFloatCharacteristic rollChar("2715", BLERead); // roll characteristic
 
 
 
@@ -39,7 +39,6 @@ void setup() {
         while (1);
     }
 
-    // BLE.setDeviceName("Gesture Glove"); // BLE device name
     BLE.setLocalName("MIE438 Device"); 
     // set service and add the characteristics
     BLE.setAdvertisedService(yprService);
@@ -132,7 +131,7 @@ void loop() {
     }
 
     // if we are here, it means BLE got disconnected, will loop back and try to connect after a short delay
-    delay(1000);
+    // delay(1000);
 
 
 }
