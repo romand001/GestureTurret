@@ -39,7 +39,7 @@ void setup() {
         while (1);
     }
 
-    BLE.setLocalName("MIE438 Device"); 
+    BLE.setLocalName("Gesture Controller"); // set device name
     // set service and add the characteristics
     BLE.setAdvertisedService(yprService);
     yprService.addCharacteristic(yawChar);
@@ -111,14 +111,11 @@ void loop() {
                 pitch = fusion.getPitch();
                 roll = fusion.getRoll();
 
+                // update BLE characteristics
                 yawChar.writeValue(yaw);
                 pitchChar.writeValue(pitch);
                 rollChar.writeValue(roll);
 
-
-                // Serial.print(pitch); Serial.print(", ");
-                // Serial.print(roll); Serial.print(", ");
-                // Serial.println(yaw);
 
             }
 
@@ -130,8 +127,7 @@ void loop() {
 
     }
 
-    // if we are here, it means BLE got disconnected, will loop back and try to connect after a short delay
-    // delay(1000);
+    // if we are here, it means BLE got disconnected, will loop back and try to connect again
 
 
 }

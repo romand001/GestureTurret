@@ -11,60 +11,46 @@ Servo servo2;
 
 void setup() {
 
+    // set laser pin to output
     pinMode(LASER_PIN, OUTPUT);
 
+    // initialize servo library to PWM pins (takes care of making them outputs)
     servo1.attach(SERVO1_PIN);
     servo2.attach(SERVO2_PIN);
     
+    // set laser on
     digitalWrite(LASER_PIN, HIGH);
 
+    // initialize serial communication with PC
     Serial.begin(9600);
 
 }
 
 void loop() {
 
-    if (Serial.available() >= 10) {
+    if (Serial.available() >= 10) { // check if we have 10 bytes or more (length of command message)
 
-        // int device = Serial.readStringUntil('-').toInt();
-        // int value = Serial.readStringUntil('\n').toInt();
-        // Serial.print(device); Serial.print("-"); Serial.println(value);
+        int angle1 = Serial.readStringUntil(',').toInt(); // angle 1 is first number
+        int angle2 = Serial.readStringUntil(',').toInt(); // angle 2 is second number
+        int laser = Serial.readStringUntil('\n').toInt(); // laser is third number
 
-        // switch (device) {
-        //     case 1:
-        //         value = max(value, S1_MIN);
-        //         value = min(value, S1_MAX);
-        //         servo1.write(value);
-        //         break;
-        //     case 2:
-        //         value = max(value, S2_MIN);
-        //         value = min(value, S2_MAX);
-        //         servo2.write(value);
-        //         break;
-        //     case 3:
-        //         if (value == 0 || value == 1) {
-        //             digitalWrite(LASER_PIN, value);
-        //         }
-        //         break;
-        // }
+        // NOTE: if the above conversions to int fail, they evaluate to 0 (this is fine)
 
-        int angle1 = Serial.readStringUntil(',').toInt();
-        int angle2 = Serial.readStringUntil(',').toInt();
-        int laser = Serial.readStringUntil('\n').toInt();
-
+        // enforce angles to be between within limits defined in header file
         angle1 = max(angle1, S1_MIN);
         angle1 = min(angle1, S1_MAX);
 
         angle2 = max(angle2, S1_MIN);
         angle2 = min(angle2, S1_MAX);
 
+        // use library to set angle of servos
         servo1.write(angle1);
         servo2.write(angle2);
 
+        // check that laser is either 0 (off) or 1 (on)
         if (laser == 0 || laser == 1) {
             digitalWrite(LASER_PIN, laser);
         }
-
 
     }
 
