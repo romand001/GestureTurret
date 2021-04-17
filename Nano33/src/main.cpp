@@ -39,8 +39,8 @@ void setup() {
         while (1);
     }
 
-    BLE.setDeviceName("Gesture Glove"); // BLE device name
-    BLE.setLocalName("Gesture Glove"); 
+    // BLE.setDeviceName("Gesture Glove"); // BLE device name
+    BLE.setLocalName("MIE438 Device"); 
     // set service and add the characteristics
     BLE.setAdvertisedService(yprService);
     yprService.addCharacteristic(yawChar);

@@ -24,7 +24,7 @@ void setup() {
 
 void loop() {
 
-    if (Serial.available() >= 6) {
+    if (Serial.available() >= 5) {
 
         int device = Serial.readStringUntil('-').toInt();
         int value = Serial.readStringUntil('\n').toInt();

@@ -1,39 +1,21 @@
+#!/usr/bin/env python3
+
 import serial
-import pygatt
-from binascii import hexlify
+
+import asyncio
+from bleak import BleakClient
+
+import logging
+import struct
+
 from time import sleep
 
 import traceback
 
-ser = None # global serial port for turret
-
-adapter = pygatt.BGAPIBackend()
-
-def handle_data(handle, value):
-    """
-    handle -- integer, characteristic read handle the data was received on
-    value -- bytearray, the data returned in the notification
-    """
-    print("Received data: %s" % hexlify(value))
-
-def yawCallback(handle, value):
-    print(f"received yaw of {value}")
-
-    angle = value / 2
-
-    ser.write("2-" + string( int(angle) ))
-
-def pitchCallback(handle, value):
-    print(f"received pitch of {value}")
-
-    angle = value / 2
-
-    ser.write("1-" + string( int(angle) ))
-
-def rollCallback(handle, value):
-    print(f"received roll of {value}, doing nothing")
-
-
+address = "83:18:48:52:8c:d8"
+yaw_UUID = "00002713-0000-1000-8000-00805f9b34fb"
+pitch_UUID = "00002714-0000-1000-8000-00805f9b34fb"
+roll_UUID = "00002715-0000-1000-8000-00805f9b34fb"
 
 def connect_serial(port, rate=9600):
     ser = serial.Serial(port = f"COM{port}", 
@@ -47,27 +29,50 @@ def connect_serial(port, rate=9600):
 
     return ser
 
+async def run(address, ser):
+
+    async with BleakClient(address) as client:
+
+        print("connection successful")
+
+        while True:
+
+            yaw_b = await client.read_gatt_char(yaw_UUID)
+            try:
+                yaw = struct.unpack('f', yaw_b)[0]
+                cmd = str.encode( "2-" + str(90 - int(yaw/2)) + "\n" )
+                print(cmd)
+                ser.write(cmd)
+            except:
+                traceback.print_exc()
+
+            pitch_b = await client.read_gatt_char(pitch_UUID)
+            try:
+                pitch = struct.unpack('f', pitch_b)[0]
+                cmd = str.encode( "1-" + str(90 - int(pitch/4)) + "\n" )
+                print(cmd)
+                ser.write(cmd)
+            except:
+                traceback.print_exc()
+
+            roll_b = await client.read_gatt_char(roll_UUID)
+            # try:
+            #     roll = struct.unpack('f', roll_b)[0]
+            #     # print(f"roll: {roll}")
+            # except:
+            #     traceback.print_exc()
+
+            line = ser.readline()
+
+            print(line)
+
+
+            sleep(0.025)
+        
 print("connecting to turret...")
-turret_serial = connect_serial(port=12, rate=9600)
+turret_serial = connect_serial(port=11, rate=9600)
 
 print("connecting to glove...")
 
-while True:
-    try:
-        adapter.start()
-        glove_ble = adapter.connect('83:18:48:52:8c:d8')
-        glove_ble.subscribe("2713", callback=yawCallback)
-        glove_ble.subscribe("2714", callback=pitchCallback)
-        glove_ble.subscribe("2715", callback=rollCallback)
-    except:
-        print("could not connect")
-        #traceback.print_exc()
-    finally:
-        adapter.stop()
-        pass
-    
-    sleep(0.5)
-
-
-
-
+loop = asyncio.get_event_loop()
+loop.run_until_complete(run(address, turret_serial))
