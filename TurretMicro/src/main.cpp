@@ -49,7 +49,8 @@ void loop() {
         // }
 
         int angle1 = Serial.readStringUntil(',').toInt();
-        int angle2 = Serial.readStringUntil('\n').toInt();
+        int angle2 = Serial.readStringUntil(',').toInt();
+        int laser = Serial.readStringUntil('\n').toInt();
 
         angle1 = max(angle1, S1_MIN);
         angle1 = min(angle1, S1_MAX);
@@ -60,7 +61,9 @@ void loop() {
         servo1.write(angle1);
         servo2.write(angle2);
 
-
+        if (laser == 0 || laser == 1) {
+            digitalWrite(LASER_PIN, laser);
+        }
 
 
     }
